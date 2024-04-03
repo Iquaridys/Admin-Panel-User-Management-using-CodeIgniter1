@@ -85,7 +85,7 @@ class Login extends CI_Controller
                                         'name'=>$result->name,
                                         'isAdmin'=>$result->isAdmin,
                                         'accessInfo'=>$accessInfo,
-                                        'lastLogin'=> $lastLogin->createdDtm,
+                                        'lastLogin'=> empty($lastLogin->createdDtm) ? '' : $lastLogin->createdDtm,
                                         'isLoggedIn' => TRUE
                                 );
 
@@ -264,14 +264,23 @@ class Login extends CI_Controller
         }
     }
 
+    /**
+     * This method use to build access information for modules from json to array.
+     * @param number $roleId: This is role id
+     * @return array $finalMatrixArray: This is converted array
+     */
     private function accessInfo($roleId)
     {
         $finalMatrixArray = [];
         $matrix = $this->login_model->getRoleAccessMatrix($roleId);
-        $accessMatrix = json_decode($matrix->access);
-        foreach($accessMatrix as $moduleMatrix) {
-            $finalMatrixArray[$moduleMatrix->module] = (array) $moduleMatrix;
+        
+        if(!empty($matrix)) {
+            $accessMatrix = json_decode($matrix->access);
+            foreach($accessMatrix as $moduleMatrix) {
+                $finalMatrixArray[$moduleMatrix->module] = (array) $moduleMatrix;
+            }
         }
+        
         return $finalMatrixArray;
     }
 }

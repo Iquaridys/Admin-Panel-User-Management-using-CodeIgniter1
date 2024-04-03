@@ -41,8 +41,11 @@ class Booking extends BaseController
             $this->loadThis();
         }
         else
-        {        
-            $searchText = $this->security->xss_clean($this->input->post('searchText'));
+        {
+            $searchText = '';
+            if(!empty($this->input->post('searchText'))) {
+                $searchText = $this->security->xss_clean($this->input->post('searchText'));
+            }
             $data['searchText'] = $searchText;
             
             $this->load->library('pagination');
@@ -89,8 +92,8 @@ class Booking extends BaseController
         {
             $this->load->library('form_validation');
             
-            $this->form_validation->set_rules('roomName','Room Name','trim|required|max_length[50]');
-            $this->form_validation->set_rules('description','Description','trim|required|max_length[1024]');
+            $this->form_validation->set_rules('roomName','Room Name','trim|callback_html_clean|required|max_length[50]');
+            $this->form_validation->set_rules('description','Description','trim|callback_html_clean|required|max_length[1024]');
             
             if($this->form_validation->run() == FALSE)
             {
@@ -158,8 +161,8 @@ class Booking extends BaseController
             
             $bookingId = $this->input->post('bookingId');
             
-            $this->form_validation->set_rules('roomName','Room Name','trim|required|max_length[50]');
-            $this->form_validation->set_rules('description','Description','trim|required|max_length[1024]');
+            $this->form_validation->set_rules('roomName','Room Name','trim|callback_html_clean|required|max_length[50]');
+            $this->form_validation->set_rules('description','Description','trim|callback_html_clean|required|max_length[1024]');
             
             if($this->form_validation->run() == FALSE)
             {
@@ -186,6 +189,11 @@ class Booking extends BaseController
                 redirect('booking/bookingListing');
             }
         }
+    }
+
+    public function html_clean($s, $v)
+    {
+        return strip_tags((string) $s);
     }
 }
 

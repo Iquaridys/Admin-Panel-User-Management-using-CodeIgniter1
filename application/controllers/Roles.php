@@ -41,7 +41,10 @@ class Roles extends BaseController
         }
         else
         {        
-            $searchText = $this->security->xss_clean($this->input->post('searchText'));
+            $searchText = '';
+            if(!empty($this->input->post('searchText'))) {
+                $searchText = $this->security->xss_clean($this->input->post('searchText'));
+            }
             $data['searchText'] = $searchText;
             
             $this->load->library('pagination');
@@ -212,6 +215,11 @@ class Roles extends BaseController
         }
     }
 
+    /**
+     * This method used to build access matrix for role from configuration
+     * and insert default entry into the database
+     * @param number $roleId : This is role id
+     */
     private function addRoleMatrix($roleId)
     {
         $this->load->config('modules');
@@ -223,6 +231,9 @@ class Roles extends BaseController
         $this->rm->insertAccessMatrix($accessMatrix);
     }
 
+    /**
+     * This method used to update the access rights for the role
+     */
     public function storeAccessMatrix()
     {
         $roleId = $this->input->post('roleIdForMatrix');
